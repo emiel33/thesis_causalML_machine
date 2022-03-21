@@ -36,15 +36,15 @@ scaleParameter = variance_parameter/mean_parameter
 # mean and standard deviations of exogenous variables,mean and stddev
 generationArguments = [[10,5,20],[2,1,3]]
 # arguments for the gamma process, timeframe and steps(gamma jumps!)
-processArguments = [10,6]
+processArguments = [2,10]
 steps = processArguments[1]
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma and scale parameter
-machineParameters = [0,100000000,[0.3/10,0.6/5,0.5/20],5,1]
-# define the data labels for dataframe
-dataLabels = ["case","steps","temperature","intensityOfUse","environment","condition","treatment"]
+machineParameters = [0,1000,[0.3/10,0.6/5,0.5/20],5,1]
+# define the data labels(columns) of the dataframe
+dataLabels = ["case","steps","temperature","intensityOfUse","environment","condition","sensor1Data","productionVolume","treatment"]
 # define sample parameters
-samplesize = 10
+samplesize = 200
 
 # initialize the exogenous covariate generator / 
 # these are not influenced by the current state of the machine
@@ -55,14 +55,14 @@ covariates  = covGen.generateCovariateTimeSeries()
 # initialize machine under study with it's parameters
 exampleMachine = Machine(machineParameters)
 
-#initialize treatment policy depending on normal conditions ("apparant" state of the machine has not been taken into account yet)
-maintenance = MaintenanceAction(generationArguments[0],generationArguments[1])
+# define maintenanceProgram for machine
+maintenance = MaintenanceProgram(exampleMachine, generationArguments)
 
 #intialize deteriorationprocess using gamma jumps
 # using machine, process arguments, covariates and the maintenance policy
-detProc = Deteriorationprocess(processArguments,exampleMachine,covariates,maintenance)
+detProc = Deteriorationprocess(processArguments,exampleMachine,maintenance,covariates)
 
-# generate one deterioration process, returns the condition and treatment decisions made
+# generate sample of processes
 
 
 data = list()
@@ -75,61 +75,45 @@ for sample in range(samplesize):
         process = detProc.generaterun()
         condition = process[0]
         treatment = process[1]
+        operatingProductionVolume = process[2]
+        sensor1Data = process[3]
         
         run.append(sample)
         run.append(step)
         run.extend(covariates[step])
         run.append(condition[step])
+        run.append(sensor1Data[step])
+        run.append(operatingProductionVolume[step])
         run.append(treatment[step])
         print(run)
         data.append(run)
 
 
+
+# put all data in a dataframe
 data = pd.DataFrame(data, columns = dataLabels)
-print(data)
+
+#index the data using case and step
 index = pd.MultiIndex.from_frame(data.iloc[:,0:2])
 data = data.drop(["case","steps"],axis = 1)
-print(data)
 data = data.set_index(index)
 
-data.to_csv(os.getcwd() + "/dataset.csv",",",index_label = "index")
+# add the cummulative production upto that time point for the given case
+data["cumumulativeProduction"]=data.groupby(['case'])['productionVolume'].cumsum(axis=0)
 
-print(data)
+#output the data to a csv
+data.to_csv(os.getcwd() + "\gammaprocesssimulation\dataset.csv",",",index_label = ["case","step"])
 
+print(data.head(30))
 
-
-
-'''
-def generatesample(samplesize,processArgs, covariates):
-    run = []
-    
-    steps= processArgs[0]
-    scaleparameter = processArgs[1]
-
-
-    for i in range(samplesize) :
-        newrun = generaterun(steps,scaleparameter,covariates)
-        run.append(newrun)
-   
-    return run      
-
-'''
+mp.plot([0,1,2,3,4],[5,6,8,12,35])
 
 
 
 
 
 
-
-
-
-
-'''
-dataSet = pd.DataFrame(attributes, columns= dataLabels)
-dataSet = dataSet.set_index(["caseId","timeIndex"])
-print(dataSet.head(20))
-'''
-'''
+"""
 
 
 
@@ -164,7 +148,7 @@ plt.show()
 
 
 
-
+"""
 
 
 

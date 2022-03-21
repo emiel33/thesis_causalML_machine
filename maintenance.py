@@ -3,11 +3,12 @@
 # sigmoid helper function
 import numpy as np
 
-class MaintenanceAction:
+class MaintenanceProgram:
 
-    def __init__(self,mean,standarddevs):
-        self.mean = mean
-        self.standarddevs = standarddevs
+    def __init__(self,productionQuote,generationArguments):
+        self.mean = generationArguments[0]
+        self.standarddevs = generationArguments[1]
+        self.productionQuote = productionQuote
         self.policy =  self.__defineTreatmentPolicy()
         
         
@@ -27,11 +28,21 @@ class MaintenanceAction:
         # draw treatment with probability sigmoid of covariates ? this is not normalized, does 
     def generateTreatmentDecision(self,covariates): 
         
-       
-        standardizedData= ( np.array(covariates) - np.array(self.mean))/ np.array(self.standarddevs)
-        
+
+        # if more than 1 than the data is quite rare, and could indicate repair is necessary
+        standardizedData= ( np.array(covariates)- np.array(self.mean))/ np.array(self.standarddevs)
         sigmoidArg= np.dot(self.policy,standardizedData)
-        return np.random.binomial(1,self.sigmoid(sigmoidArg))
+        maintenance = np.random.binomial(1,self.sigmoid(sigmoidArg))
+       
+        return maintenance
+
+    def calculateTreatementCost(self):
+
+        productionReductionFactor = 0.2
+        return productionReductionFactor
    
     def performTreatment(self,currentCondition):
-        return currentCondition - np.random.normal(10,5)
+        newCondition = currentCondition - np.random.normal(5,2.5)
+        if(newCondition<0):
+            newCondition = 0
+        return  newCondition

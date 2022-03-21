@@ -59,7 +59,6 @@ class CovariateGenerator:
        
         for step in range(self.steps):
             covariates = self.generateCovariateTimePoint()
-            print(covariates)
             covariateTimeSeries.append(covariates)
             
             

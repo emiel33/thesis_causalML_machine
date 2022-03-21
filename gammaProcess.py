@@ -1,7 +1,7 @@
  
 from cmath import e, exp
 import numpy as np
-import maintenance
+from maintenance import MaintenanceProgram
 
 
 class Machine:
@@ -14,12 +14,16 @@ class Machine:
          self.betas = machineParameters[2]
          self.sigma = machineParameters[3]
          self.scaleParameter = machineParameters[4]
-         
+         self.maxProductionSpeed = 100/1
+         self.productionQuote = 0.80*self.maxProductionSpeed
+
+        
+        
          
         
     
-    def failed(self):
-        if(self.condition > self.criticalDamage):
+    def failed(self,condition):
+        if(condition >= self.criticalDamage):
              return True
         return False
     
@@ -30,8 +34,9 @@ class Machine:
     def scaledTimeIncrement(self,prevCovariates,covariates,Betas,stepsize):
         return ((e**(np.dot(Betas,prevCovariates)))+(e**(np.dot(Betas,covariates))))*stepsize/2
 
-    def meanDegradation(self,alpha,slope = 1):
-        return slope * alpha**2
+    def meanDegradation(self,alpha,slope = 100):
+        return slope * alpha
+    
      #denominator causes issues ! have to look into this!                                                                                                                   
     def shapeFunction(self,alpha,prevalpha):
         return (self.meanDegradation(alpha) - self.meanDegradation(prevalpha))
@@ -39,7 +44,7 @@ class Machine:
 
 class Deteriorationprocess:
 
-    def __init__(self, processArguments, machine, covariates,maintenance):
+    def __init__(self, processArguments,machine,maintenanceProgram,covariates):
        
         # define basic process properties
         self.timeFrame = processArguments[0]
@@ -48,18 +53,17 @@ class Deteriorationprocess:
         
         # define machine and it's properties tied to the process
         self.machine =  machine
+        self.maintenance = maintenanceProgram
 
-        # create dictionary to store the condition over time
+        # create arrays to store the condition over time
         self.conditionArray = np.empty(self.steps)
         self.treatmentDecisionArray = np.empty(self.steps)
+        self.operatingProductionArray = np.empty(self.steps)
+        self.sensor1Array = np.empty(self.steps)
+        
        
         # import exogenous covariates array into the process
         self.covariates = covariates
-
-        # define treatment Policy
-
-        self.maintenance = maintenance
-
 
     # alpha is the parameter that determines the mean deterioration! We assume constancy of all covariates over the period until the current!
 
@@ -68,14 +72,15 @@ class Deteriorationprocess:
        
         self.conditionArray[0] = 0
         self.treatmentDecisionArray[0] = 0
+        self.operatingProductionArray[0] = 0
         prevAlpha = 0
     
         
         for step in range(1,self.steps):
              
-             failedstate = self.machine.failed()
+             failedstate = self.machine.failed(self.conditionArray[step - 1])
              if(failedstate == True):
-                self.conditionArray[step] = 0
+                self.conditionArray[step] = np.NaN
                 continue
 
              
@@ -90,9 +95,12 @@ class Deteriorationprocess:
              incrementDeterioriation =np.random.gamma(shape, self.machine.scaleParameter)
              self.conditionArray[step] = self.conditionArray[step-1] + incrementDeterioriation
              self.machine.condition = self.conditionArray[step]
+             self.sensor1Array[step] = np.random.normal(self.machine.condition -10, 20)
+             
+             self.operatingProductionArray[step] = (self.machine.criticalDamage - (self.conditionArray[step] + self.conditionArray[step - 1])/2)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost()
 
              self.treatmentDecisionArray[step] = self.maintenance.generateTreatmentDecision(self.covariates[step])
-
+                    
              if(self.treatmentDecisionArray[step] == 1):
                self.conditionArray[step] = self.maintenance.performTreatment(self.conditionArray[step])
              
@@ -103,7 +111,7 @@ class Deteriorationprocess:
              prevAlpha = currentAlpha
          
 
-        return self.conditionArray, self.treatmentDecisionArray
+        return self.conditionArray, self.treatmentDecisionArray, self.operatingProductionArray , self.sensor1Array
 
 
 
