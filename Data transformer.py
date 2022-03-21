@@ -1,12 +1,13 @@
 import csv
 
-with open("in.csv") as f, open("out.csv", "w") as out:
-    headers = next(f).split()[1:]  # keep headers(for not id)
+with open("dataset.csv") as f, open("out.csv", "w") as out:
+    headers = next(f).split(",")[2:]  # keep headers(for not id)
     for row in f:
-        row = row.split()
-        time = row[0]
-        data = zip(headers, row[1:])  # match correct temp to row item
+        row = row.split(",")
+        time = row[1]
+        case = row[0]
+        data = zip(headers, row[2:])  # match correct value to row item
         for a, b in data:
-            out.write("{} {} {}\n".format(time, a.lower(), b))
-            print("{} {} {}".format(time, a.lower(), b))
+            out.write("{}, {}, {}, {}\n".format(case,time, a.lower().strip('\n'), b.strip('\n')))
+            print("{} {} {} {}".format(case,time, a.lower(), b))
 
