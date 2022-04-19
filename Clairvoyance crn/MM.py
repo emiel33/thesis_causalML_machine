@@ -11,7 +11,7 @@ import sys, os
 sys.path.append(os.path.realpath('..'))
 
 
-from utils import PipelineComposer
+#from utils import PipelineComposer
 
 import logging
 logger = logging.getLogger()
@@ -20,7 +20,24 @@ logger.setLevel(logging.INFO)
 
 # IN THE NEXT PART LOAD THE DATA SET AND FORMAT IT AS NEEDED
 
+from datasets.data_loader import CSVLoader
 
+# Define data name
+data_name = 'machine_1'
+# Define data dictionary
+data_directory = '../datasets/data/'+data_name + '/' + data_name + '_'
+
+# Load train and test datasets
+data_loader_training = CSVLoader(static_file=data_directory + 'static_train_data.csv.gz',
+                                 temporal_file=data_directory + 'temporal_train_data_eav.csv.gz')
+
+data_loader_testing = CSVLoader(static_file=data_directory + 'static_test_data.csv.gz',
+                                temporal_file=data_directory + 'temporal_test_data_eav.csv.gz')
+
+dataset_training = data_loader_training.load()
+dataset_testing = data_loader_testing.load()
+
+print('Finish data loading.')
 
 
 
@@ -28,12 +45,12 @@ logger.setLevel(logging.INFO)
 
 
 #DEFINE PROBLEM
-from preprocessing import ProblemMaker
+from preprocessing.encoding import ProblemMaker
 # Define parameters
 problem = 'online'
 max_seq_len = 20
-label_name = 'Production' #label name of production capacity, colum that will be tracked
-treatment = ['maintenance']#label name of the repair/maintenance 
+label_name = 'productionVolume' #label name of production capacity, colum that will be tracked
+treatment = ['treatment']#label name of the repair/maintenance
 window = 1
 
 # Define problem 
@@ -93,3 +110,12 @@ test_y_hat = treatment_model.predict(dataset_testing)
 
 print('Finish treatment effects model training and testing.')
 
+from evaluation import Metrics
+from evaluation import print_performance
+
+# Evaluate predictor model
+result = Metrics(metric_sets, metric_parameters).evaluate(dataset_testing.label, test_y_hat)
+print('Finish predictor model evaluation.')
+
+print('Overall performance')
+print_performance(result, metric_sets, metric_parameters)
