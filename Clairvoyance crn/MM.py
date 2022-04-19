@@ -11,7 +11,7 @@ import sys, os
 sys.path.append(os.path.realpath('..'))
 
 
-from utils import PipelineComposer
+#from utils import PipelineComposer
 
 import logging
 logger = logging.getLogger()
@@ -20,7 +20,7 @@ logger.setLevel(logging.INFO)
 
 # IN THE NEXT PART LOAD THE DATA SET AND FORMAT IT AS NEEDED
 
-from datasets import CSVLoader
+from datasets.data_loader import CSVLoader
 
 # Define data name
 data_name = 'machine_1'
@@ -45,7 +45,7 @@ print('Finish data loading.')
 
 
 #DEFINE PROBLEM
-from preprocessing import ProblemMaker
+from preprocessing.encoding import ProblemMaker
 # Define parameters
 problem = 'online'
 max_seq_len = 20
