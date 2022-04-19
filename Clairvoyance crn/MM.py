@@ -77,7 +77,7 @@ from treatments.treatments import treatment_effects_model
 
 # Set the treatment effects model
 model_name = 'CRN'
-projection_horizon = 5
+projection_horizon = 3
 
 # Set up validation for early stopping and best model saving
 dataset_training.train_val_test_split(prob_val=0.2, prob_test = 0.0)
