@@ -110,3 +110,12 @@ test_y_hat = treatment_model.predict(dataset_testing)
 
 print('Finish treatment effects model training and testing.')
 
+from evaluation import Metrics
+from evaluation import print_performance
+
+# Evaluate predictor model
+result = Metrics(metric_sets, metric_parameters).evaluate(dataset_testing.label, test_y_hat)
+print('Finish predictor model evaluation.')
+
+print('Overall performance')
+print_performance(result, metric_sets, metric_parameters)
