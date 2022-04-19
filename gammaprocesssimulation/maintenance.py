@@ -2,13 +2,14 @@
 
 # sigmoid helper function
 import numpy as np
+from math import e
 
 class MaintenanceProgram:
 
-    def __init__(self,productionQuote,generationArguments):
+    def __init__(self,generationArguments,machine):
         self.mean = generationArguments[0]
         self.standarddevs = generationArguments[1]
-        self.productionQuote = productionQuote
+        self.machine = machine
         self.policy =  self.__defineTreatmentPolicy()
         
         
@@ -41,8 +42,13 @@ class MaintenanceProgram:
         productionReductionFactor = 0.2
         return productionReductionFactor
    
-    def performTreatment(self,currentCondition):
-        newCondition = currentCondition - np.random.normal(5,2.5)
-        if(newCondition<0):
-            newCondition = 0
-        return  newCondition
+    def performTreatment(self,currentMachineTime,currentGammaState):
+       
+        currentMachineTime = currentMachineTime - np.random.normal(e**5*10)
+        newGammaState =  self.machine.meanDegradation(currentMachineTime)/ self.machine.sigma**2
+
+
+        if (newGammaState < 0):
+            newGammaState = 0
+        
+        return  currentMachineTime, newGammaState
