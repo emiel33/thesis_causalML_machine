@@ -29,7 +29,7 @@ from datasets.data_loader import CSVLoader
 # Define data name
 data_name = 'machine_1'
 # Define data dictionary
-data_directory = '../datasets/data/'+data_name + '/' + data_name + '_'
+data_directory = data_name + '/' + data_name + '_'
 
 # Load train and test datasets
 data_loader_training = CSVLoader(static_file=data_directory + 'static_train_data.csv.gz',
