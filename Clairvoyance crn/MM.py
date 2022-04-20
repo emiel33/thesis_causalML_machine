@@ -53,8 +53,8 @@ from preprocessing.encoding import ProblemMaker
 # Define parameters
 problem = 'online'
 max_seq_len = 20
-label_name = 'productionVolume' #label name of production capacity, colum that will be tracked
-treatment = ['treatment']#label name of the repair/maintenance
+label_name = ' productionvolume' #label name of production capacity, colum that will be tracked
+treatment = [' treatment']#label name of the repair/maintenance
 window = 1
 
 # Define problem 
