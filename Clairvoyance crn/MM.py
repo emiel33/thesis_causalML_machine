@@ -18,6 +18,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+# write alll print output to program output file
+file_path = 'program output.txt'
+sys.stdout = open(file_path, "w")
+
 # IN THE NEXT PART LOAD THE DATA SET AND FORMAT IT AS NEEDED
 
 from datasets.data_loader import CSVLoader
