@@ -18,6 +18,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+# write alll print output to program output file
+file_path = 'program output.txt'
+sys.stdout = open(file_path, "w")
+
 # IN THE NEXT PART LOAD THE DATA SET AND FORMAT IT AS NEEDED
 
 from datasets.data_loader import CSVLoader
@@ -25,7 +29,7 @@ from datasets.data_loader import CSVLoader
 # Define data name
 data_name = 'machine_1'
 # Define data dictionary
-data_directory = '../datasets/data/'+data_name + '/' + data_name + '_'
+data_directory = data_name + '/' + data_name + '_'
 
 # Load train and test datasets
 data_loader_training = CSVLoader(static_file=data_directory + 'static_train_data.csv.gz',
@@ -49,8 +53,8 @@ from preprocessing.encoding import ProblemMaker
 # Define parameters
 problem = 'online'
 max_seq_len = 20
-label_name = 'productionVolume' #label name of production capacity, colum that will be tracked
-treatment = ['treatment']#label name of the repair/maintenance
+label_name = ' productionvolume' #label name of production capacity, colum that will be tracked
+treatment = [' treatment']#label name of the repair/maintenance
 window = 1
 
 # Define problem 
@@ -61,7 +65,7 @@ dataset_training = problem_maker.fit_transform(dataset_training)
 dataset_testing = problem_maker.fit_transform(dataset_testing)
 
 # Set other parameters
-metric_name = 'auc' #optimize the Area Under Curve
+metric_name = 'mse' #optimize the Area Under Curve
 task = 'classification' # treatment either happens or not so classification
 
 metric_sets = [metric_name]
@@ -77,26 +81,26 @@ from treatments.treatments import treatment_effects_model
 
 # Set the treatment effects model
 model_name = 'CRN'
-projection_horizon = 3
+projection_horizon = 5
 
 # Set up validation for early stopping and best model saving
 dataset_training.train_val_test_split(prob_val=0.2, prob_test = 0.0)
 
 
-model_parameters={'encoder_rnn_hidden_units': 128,
-                  'encoder_br_size': 64,
-                  'encoder_fc_hidden_units':128,
+model_parameters={'encoder_rnn_hidden_units': 16,
+                  'encoder_br_size': 8,
+                  'encoder_fc_hidden_units':16,
                   'encoder_learning_rate': 0.001,
-                  'encoder_batch_size': 256,
+                  'encoder_batch_size': 32,
                   'encoder_keep_prob': 0.9,
                   'encoder_num_epochs': 100,
                   'encoder_max_alpha': 1.0,
-                  'decoder_br_size': 64,
-                  'decoder_fc_hidden_units': 128,
+                  'decoder_br_size': 8,
+                  'decoder_fc_hidden_units': 16,
                   'decoder_learning_rate': 0.001,
-                  'decoder_batch_size': 512,
+                  'decoder_batch_size': 64,
                   'decoder_keep_prob': 0.9,
-                  'decoder_num_epochs': 100,
+                  'decoder_num_epochs': 10,
                   'decoder_max_alpha': 1.0,
                   'projection_horizon': 5,
                   'static_mode': 'concatenate',
