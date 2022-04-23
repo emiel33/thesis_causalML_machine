@@ -1,18 +1,14 @@
 #%%
-from cmath import e, exp
-from this import d
-from turtle import fd
-from typing_extensions import Self
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy.stats import random_correlation
 
 
-
-#generate covariance matrix to indicate relationship between covariates 
+#generate covariance matrix to indicate relationship between covariates appearing 
 
 class CovariateGenerator:
 
-    def __init__(self,processArguments,generationArguments):
+    def __init__(self,processArguments,generationArguments,rng):
+       
         # general process parameters
         self.timeFrame = processArguments[0]
         self.steps = processArguments[1]
@@ -21,47 +17,37 @@ class CovariateGenerator:
         # parameters for exogenous variable generation
         self.mean = generationArguments[0]
         self.standarddev = generationArguments[1]
+        self.rng =rng
+        self.covariance = self.__generateCovarianceMatrix(self.rng)
 
-        self.covariance = self.__generateCovarianceMatrix()
 
-
-    def __generateCovarianceMatrix(self):
-    
-        correlationMatrix = np.empty((len(self.standarddev),len(self.standarddev)))
-        # generate standardized data i.e. correlation matrix and scale with standard deviations
-        # no guarantee that it is positive definite! must be changed
-        X = 0
-        while X < len(self.standarddev):
-         Y = 0
-         while Y <= X:
-            correlationMatrix[X][Y] = np.random.uniform(-0.5,0.5)
-            correlationMatrix[Y][X] = correlationMatrix[X][Y]
-            Y+=1
-         X+=1
-    
+    def __generateCovarianceMatrix(self,rng):
+       
+        # generate random correlation matrix 
+        # each eigenvalue represents percentage explained covariance of dimension/4
+        #  parameters must always sum to dimension of correlation matrix ( thus total explained covariance = 1)
+        random = rng
+        correlationMatrix = random_correlation.rvs((.5, .9, 1.6), random_state = random)
+        # create diagonally filled matrix with standarddevs
         standarddevMatrix = np.diag(self.standarddev)
+        # create covariance matrix based on the standdardevs and random correlation matrix
         covariance = np.matmul(standarddevMatrix,np.matmul(correlationMatrix,standarddevMatrix))
+        
         return covariance
     
     def generateCovariateTimePoint(self):
         
         # should we add bias here?
-        covariates =  list(np.random.multivariate_normal(self.mean,self.covariance))
-        
+        covariates =  list(self.rng.multivariate_normal(self.mean,self.covariance))
         return covariates
     
-        # following combination ensures symmetry of the matrix,
-        #return 0.5*(covariance + covariance.transpose()) as in paper bica 
     
     def generateCovariateTimeSeries(self):
         covariateTimeSeries = list()
-
-       
+        
         for step in range(self.steps):
             covariates = self.generateCovariateTimePoint()
             covariateTimeSeries.append(covariates)
-            
-            
         return covariateTimeSeries
 
 
