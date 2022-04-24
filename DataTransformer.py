@@ -1,6 +1,6 @@
 import csv
 
-with open("dataset.csv") as f, open("out.csv", "w") as out:
+with open("Dtest.csv") as f, open("Dtestout.csv", "w") as out:
     headers = next(f).split(",")[2:]  # keep headers(for not id)
     for row in f:
         row = row.split(",")

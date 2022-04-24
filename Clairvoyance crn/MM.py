@@ -27,7 +27,7 @@ sys.stdout = open(file_path, "w")
 from datasets.data_loader import CSVLoader
 
 # Define data name
-data_name = 'machine_1'
+data_name = 'machine_5'
 # Define data dictionary
 data_directory = data_name + '/' + data_name + '_'
 
@@ -87,20 +87,20 @@ projection_horizon = 5
 dataset_training.train_val_test_split(prob_val=0.2, prob_test = 0.0)
 
 
-model_parameters={'encoder_rnn_hidden_units': 16,
-                  'encoder_br_size': 8,
-                  'encoder_fc_hidden_units':16,
+model_parameters={'encoder_rnn_hidden_units': 128,
+                  'encoder_br_size': 64,
+                  'encoder_fc_hidden_units': 128,
                   'encoder_learning_rate': 0.001,
-                  'encoder_batch_size': 32,
+                  'encoder_batch_size': 256,
                   'encoder_keep_prob': 0.9,
                   'encoder_num_epochs': 100,
                   'encoder_max_alpha': 1.0,
-                  'decoder_br_size': 8,
-                  'decoder_fc_hidden_units': 16,
+                  'decoder_br_size': 64,
+                  'decoder_fc_hidden_units': 128,
                   'decoder_learning_rate': 0.001,
-                  'decoder_batch_size': 64,
+                  'decoder_batch_size': 512,
                   'decoder_keep_prob': 0.9,
-                  'decoder_num_epochs': 10,
+                  'decoder_num_epochs': 100,
                   'decoder_max_alpha': 1.0,
                   'projection_horizon': 5,
                   'static_mode': 'concatenate',
@@ -123,3 +123,133 @@ print('Finish predictor model evaluation.')
 
 print('Overall performance')
 print_performance(result, metric_sets, metric_parameters)
+
+print("results")
+print (result)
+print("overall result")
+print(np.nanmean(result[' productionvolume + mse']))
+
+
+
+
+  # Predict and visualize counterfactuals for the sequence of treatments indicated by the user through the treatment_options
+def all_options():
+    return np.array([[[0], [1], [1], [1], [1], [1]],
+ [[0], [1], [1], [1], [1], [0]],
+ [[0], [1], [1], [1], [0], [1]],
+ [[0], [1], [1], [1], [0], [0]],
+ [[0], [1], [1], [0], [1], [1]],
+ [[0], [1], [1], [0], [1], [0]],
+ [[0], [1], [1], [0], [0], [1]],
+ [[0], [1], [1], [0], [0], [0]],
+ [[0], [1], [0], [1], [1], [1]],
+ [[0], [1], [0], [1], [1], [0]],
+ [[0], [1], [0], [1], [0], [1]],
+ [[0], [1], [0], [1], [0], [0]],
+ [[0], [1], [0], [0], [1], [1]],
+ [[0], [1], [0], [0], [1], [0]],
+ [[0], [1], [0], [0], [0], [1]],
+ [[0], [1], [0], [0], [0], [0]],
+ [[0], [0], [1], [1], [1], [1]],
+ [[0], [0], [1], [1], [1], [0]],
+ [[0], [0], [1], [1], [0], [1]],
+ [[0], [0], [1], [1], [0], [0]],
+ [[0], [0], [1], [0], [1], [1]],
+ [[0], [0], [1], [0], [1], [0]],
+ [[0], [0], [1], [0], [0], [1]],
+ [[0], [0], [1], [0], [0], [0]],
+ [[0], [0], [0], [1], [1], [1]],
+ [[0], [0], [0], [1], [1], [0]],
+ [[0], [0], [0], [1], [0], [1]],
+ [[0], [0], [0], [1], [0], [0]],
+ [[0], [0], [0], [0], [1], [1]],
+ [[0], [0], [0], [0], [1], [0]],
+ [[0], [0], [0], [0], [0], [1]],
+ [[0], [0], [0], [0], [0], [0]],
+ [[1], [1], [1], [1], [1], [1]],
+ [[1], [1], [1], [1], [1], [0]],
+ [[1], [1], [1], [1], [0], [1]],
+ [[1], [1], [1], [1], [0], [0]],
+ [[1], [1], [1], [0], [1], [1]],
+ [[1], [1], [1], [0], [1], [0]],
+ [[1], [1], [1], [0], [0], [1]],
+ [[1], [1], [1], [0], [0], [0]],
+ [[1], [1], [0], [1], [1], [1]],
+ [[1], [1], [0], [1], [1], [0]],
+ [[1], [1], [0], [1], [0], [1]],
+ [[1], [1], [0], [1], [0], [0]],
+ [[1], [1], [0], [0], [1], [1]],
+ [[1], [1], [0], [0], [1], [0]],
+ [[1], [1], [0], [0], [0], [1]],
+ [[1], [1], [0], [0], [0], [0]],
+ [[1], [0], [1], [1], [1], [1]],
+ [[1], [0], [1], [1], [1], [0]],
+ [[1], [0], [1], [1], [0], [1]],
+ [[1], [0], [1], [1], [0], [0]],
+ [[1], [0], [1], [0], [1], [1]],
+ [[1], [0], [1], [0], [1], [0]],
+ [[1], [0], [1], [0], [0], [1]],
+ [[1], [0], [1], [0], [0], [0]],
+ [[1], [0], [0], [1], [1], [1]],
+ [[1], [0], [0], [1], [1], [0]],
+ [[1], [0], [0], [1], [0], [1]],
+ [[1], [0], [0], [1], [0], [0]],
+ [[1], [0], [0], [0], [1], [1]],
+ [[1], [0], [0], [0], [1], [0]],
+ [[1], [0], [0], [0], [0], [1]],
+ [[1], [0], [0], [0], [0], [0]]])
+
+def calc_best(patient_history, treatment_options, counterfactual_predictions):
+    """Visualize the counterfactual predictions.
+
+    Args:
+        - patient_history
+        - treatment_options
+        - counterfactual_predictions
+
+    Returns:
+        - Counterfactual predictions in graph
+    """
+    prediction_horizon = treatment_options.shape[1]
+    history_length = patient_history.shape[0]
+    best=0
+    best_value=0
+    totals=[]
+    for (index, counterfactual) in enumerate(counterfactual_predictions):
+        #print("counter", index, counterfactual)
+        s=0
+        for i in counterfactual:
+            s+=i
+        totals.append(s)
+        if s>best_value:
+            best_value=s
+            best=index
+        #print("som",s)
+    #print(best,best_value)
+    return best
+#treatment_options = np.array([[[1], [1], [1], [1], [1], [0]]
+#                                 ,[[0], [0], [0], [0], [1], [1]]])
+treatment_options=all_options()
+
+history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
+                                                                            patient_id=6, timestep=5,
+                                                                            treatment_options=treatment_options)
+
+#from evaluation import print_counterfactual_predictions
+#print_counterfactual_predictions(patient_history=history, treatment_options=treatment_options,
+#                                   counterfactual_predictions=counterfactual_traj)
+#
+#desired=calc_best(patient_history=history, treatment_options=treatment_options,
+#                                counterfactual_predictions=counterfactual_traj)
+#print("treatment paln for ",6,treatment_options[desired])
+
+for i in range(10):
+
+    history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
+                                                                            patient_id=2+i, timestep=2+i,
+                                                                            treatment_options=treatment_options)
+
+    desired=calc_best(patient_history=history, treatment_options=treatment_options,
+                                counterfactual_predictions=counterfactual_traj)
+    print("treatment paln for ",2+i,treatment_options[desired])
+

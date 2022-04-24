@@ -306,9 +306,10 @@ def print_counterfactual_predictions(patient_history, treatment_options, counter
     figs = []
     fig = plt.figure(10, figsize=(8, 4))
 
-    plt.plot(range(history_length), patient_history, label="Patient history", color="#237F57")
+    #plt.plot(range(history_length), patient_history, label="Patient history", color="#237F57")
     plt.axvline(x=history_length - 1, linestyle="--")
     for (index, counterfactual) in enumerate(counterfactual_predictions):
+        print("counter",index,counterfactual)
         extended_counterfactual = np.concatenate([[patient_history[-1]], counterfactual])
         plt.plot(range(history_length - 1, history_length + prediction_horizon), extended_counterfactual)
 
@@ -322,6 +323,7 @@ def print_counterfactual_predictions(patient_history, treatment_options, counter
             c="#3788CF",
             Label="No treatment",
         )
+        #print("no",index,[no_treatment_idx],counterfactual[no_treatment_idx])
 
         treatment_idx = np.where(treatment_options[index] == 1)[0]
         plt.scatter(
@@ -332,6 +334,7 @@ def print_counterfactual_predictions(patient_history, treatment_options, counter
             c="#C93819",
             Label="Treatment",
         )
+        #print("yes",index, [treatment_idx], counterfactual[treatment_idx])
 
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))

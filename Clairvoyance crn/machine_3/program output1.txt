@@ -1,0 +1,73 @@
+Finish data loading.
+Finish defining problem.
+Finish treatment effects model training and testing.
+Finish predictor model evaluation.
+Overall performance
+results
+{' productionvolume + mse': array([874.1195047 , 775.95827858, 683.80006525, 598.21674218,
+       519.18581766, 445.78734991, 377.62720951, 316.37556715,
+       259.59734447, 208.55886893, 163.75237782, 124.53828639,
+        91.01445829,  63.64356709,          nan,          nan,
+                nan,          nan,          nan,          nan])}
+overall result
+393.0125312812894
+treatment paln for  2 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  3 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  4 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  5 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  6 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  7 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  8 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  9 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  10 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
+treatment paln for  11 [[0]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]
