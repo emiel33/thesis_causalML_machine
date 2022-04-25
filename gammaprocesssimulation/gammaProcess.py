@@ -16,6 +16,7 @@ class Deteriorationprocess:
         self.steps = processArguments[1]
         self.scaleParameter = processArguments[2]
         self.stepsize = self.timeFrame/self.steps
+        self.decisiondelta = processArguments[3]
         
         # define machine and it's properties tied to the process
         
@@ -39,7 +40,7 @@ class Deteriorationprocess:
         
         history = list()
         oldMachineTime = 0
-        prevGammaState= float(self.machine.initialCondition)
+        prevGammaState = self.machine.initialCondition
         prevDegradation = prevGammaState* self.machine.sigma**2
         currentDegradation = 0
         
@@ -52,7 +53,7 @@ class Deteriorationprocess:
              
              # check if machine has failed?
 
-            if(self.machine.failed(currentDegradation)):
+            if(self.machine.failed(False)):
                 
                timeStepData = [self.machine.caseNumber,step,None,None,None,None,None,None,None]
                history.append(timeStepData)
@@ -60,7 +61,9 @@ class Deteriorationprocess:
             else:
              
              # generate covariates at for current step
+            
              currentCovariates = self.covariateGenerator.generateCovariateTimePoint()
+             
              
              # increment machineTime according to theory of accumulation of damages
              newMachineTime = oldMachineTime + self.scaledTimeIncrement(currentCovariates, self.machine.betas)
@@ -77,13 +80,16 @@ class Deteriorationprocess:
              sensordata =  self.rng.normal(currentDegradation,10)
              
              # calculate Production for the period given current condition
+             averageDegradation = (currentDegradation + prevDegradation)/2
+             currentProduction =  max(0,( 1 - averageDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost())
 
-             currentProduction =  max(0,(self.machine.criticalDamage - (currentDegradation + prevDegradation)/2)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost())
-
-             treatmentDecision = self.maintenance.generateTreatmentDecision(currentCovariates)
+             
+             treatmentDecision = self.maintenance.generateTreatmentDecision(currentCovariates, step)
+            
+                
                     
              if(treatmentDecision):
-              newMachineTime,currentGammaState = self.maintenance.performTreatment(newMachineTime,currentGammaState,currentCovariates,self.machine,history)
+              newMachineTime,currentGammaState =  self.maintenance.performTreatment(newMachineTime,currentGammaState,currentCovariates,self.machine,history)
              
               
              

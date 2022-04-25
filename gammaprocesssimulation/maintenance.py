@@ -7,11 +7,12 @@ from math import e
 
 class MaintenanceProgram:
 
-    def __init__(self,generationArguments,rng):
+    def __init__(self,generationArguments,rng, treatmentPolicy = None):
         self.mean = generationArguments[0]
         self.standarddevs = generationArguments[1]
         self.policy =  self.__defineTreatmentPolicy()
         self.rng = rng
+        self.treatmentPolicy = treatmentPolicy
         
 
 
@@ -25,13 +26,16 @@ class MaintenanceProgram:
         return 1/(1 + np.exp(x))
 
         # draw treatment with probability sigmoid of covariates ? this is not normalized, does 
-    def generateTreatmentDecision(self,covariates): 
+    def generateTreatmentDecision(self,covariates,step): 
         
-
+        if(self.treatmentPolicy == None):
         # if more than 1 than the data is quite rare, and could indicate repair is necessary
-        standardizedData= ( np.array(covariates)- np.array(self.mean))/ np.array(self.standarddevs)
-        sigmoidArg= np.dot(self.policy,standardizedData)
-        maintenance = self.rng.binomial(1,self.sigmoid(sigmoidArg))
+            standardizedData= ( np.array(covariates)- np.array(self.mean))/ np.array(self.standarddevs)
+            sigmoidArg= np.dot(self.policy,standardizedData)
+            maintenance = self.rng.binomial(1,self.sigmoid(sigmoidArg))
+        else:
+            maintenance = self.treatmentPolicy[step]
+
        
         return maintenance
 
