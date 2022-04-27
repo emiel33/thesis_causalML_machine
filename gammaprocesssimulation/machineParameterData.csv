@@ -1,0 +1,3 @@
+caseNumber,startingCondition,breakdownCondition,betas,sigma,maxProductionSpeed
+1,0,1000,"[0.0, 0.0, 0.0]",0.01,10000
+1,0,1000,"[0.0, 0.0, 0.0]",0.01,10000

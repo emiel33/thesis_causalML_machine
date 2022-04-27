@@ -47,7 +47,7 @@ class MaintenanceProgram:
     def performTreatment(self,currentMachineTime,currentGammaState,currentCovariates,machine,history):
        
        # For the purposes of this simulation repair success depends on the current and previous period covariates
-        
+        '''
         if(len(history) < 1):
             temperatureInfluence = (currentCovariates[0])*0.8
             usageInfluence = (currentCovariates[1])*1.3
@@ -56,8 +56,9 @@ class MaintenanceProgram:
             temperatureInfluence = (currentCovariates[0]+ history[-1][2]*0.5)*1
             usageInfluence = (currentCovariates[1] + history[-1][3]*0.5)*1.5
             humidity = (currentCovariates[2] + history[-1][4]*0.5)*1.2
-        
-        newGammaState  =  currentGammaState - self.rng.normal(temperatureInfluence + usageInfluence + humidity,5)/machine.sigma**2
+        '''
+        # check correctness
+        newGammaState  =  (currentGammaState - self.rng.lognormal(3.25,0.25)/machine.sigma**2)
        # Machine time reset to earlier point / chosen to be lower than the average would suspect in able to indicate incomplete revearsal 
        # if machine had exponential decay this would make early intervention better, in linear case less important!
         newMachineTime =  (machine.machineTime(newGammaState) + currentMachineTime)/2

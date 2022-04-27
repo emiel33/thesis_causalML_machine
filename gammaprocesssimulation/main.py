@@ -1,5 +1,6 @@
 #%%
 
+import math
 import statistics as stat
 
 
@@ -23,16 +24,16 @@ steps = processArguments[1]
 
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma, maxproduction volume/day
-machineParameters = [0,5000,[0.2/10,0.5/5,0.3/20],2,100]
+machineParameters = [0,1000,[math.log(1,e)/10,math.log(1,e)/9,math.log(1,e)/20],0.01,10000]
 
 
 
 machineParametersLabels = ["caseNumber","startingCondition", "breakdownCondition","betas", "sigma", "maxProductionSpeed"]
 # define the data labels(columns) of the dataframe
-dataLabels = ["caseNumber","steps","temperature","intensityOfUse","humidity","degradationState","sensorData","productionVolume","treatment"]
+dataLabels = ["caseNumber","steps","temperature","intensityOfUse","humidity","degradationState","degradationAfterTreatment","productionVolume","treatment"]
 
 # define sample parameters
-samplesize = 2000
+samplesize = 2
 
 ###########################################################################################################################################
 
@@ -92,8 +93,8 @@ def formatData(deteriorationData,machineParameterData):
   deteriorationData["cumulativeProduction"]=deteriorationData.groupby(['caseNumber'])['productionVolume'].cumsum(axis=0)
 
   #output the data to a csv
-  deteriorationData.to_csv(os.getcwd() + "\deteriorationData.csv")
-  machineParameterData.to_csv(os.getcwd() + "\machineParameterData.csv")
+  deteriorationData.to_csv(os.getcwd() + "/gammaprocesssimulation/deteriorationData.csv")
+  machineParameterData.to_csv(os.getcwd() + "/gammaprocesssimulation/machineParameterData.csv")
 
   return deteriorationData,machineParameterData
 
@@ -120,7 +121,7 @@ dynamicMaintenance = MaintenanceProgram(covariateGenerationArguments,rng)
 
 # generate the sample
 
-deteriorationData,machineParameterData = generateSample(samplesize,rng,dynamicMaintenance)
+deteriorationData,machineParameterData = generateSample(samplesize,rng,dynamicMaintenance,fixedMachine)
 # format data into csv format
 deteriorationDatadf,machineParameterDatadf = formatData(deteriorationData,machineParameterData)
 
@@ -129,9 +130,9 @@ deteriorationDatadf,machineParameterDatadf = formatData(deteriorationData,machin
 
 
 # graph data! 
-graphSampleData(deteriorationData,"degradationState",processArguments)
-graphSampleData(deteriorationData,"cumulativeProduction",processArguments)
-graphSampleData(deteriorationData,"productionVolume",processArguments)
+graphSampleData(deteriorationDatadf,"degradationState",processArguments)
+graphSampleData(deteriorationDatadf,"cumulativeProduction",processArguments)
+graphSampleData(deteriorationDatadf,"productionVolume",processArguments)
 
 
 

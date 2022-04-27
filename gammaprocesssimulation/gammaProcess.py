@@ -53,7 +53,7 @@ class Deteriorationprocess:
              
              # check if machine has failed?
 
-            if(self.machine.failed(False)):
+            if(self.machine.failed(currentDegradation)):
                 
                timeStepData = [self.machine.caseNumber,step,None,None,None,None,None,None,None]
                history.append(timeStepData)
@@ -76,26 +76,28 @@ class Deteriorationprocess:
              currentGammaState = prevGammaState + incrementDeterioriation
              currentDegradation = currentGammaState * self.machine.sigma**2
              
-             # calculate sensor output as proxy for condition
-             sensordata =  self.rng.normal(currentDegradation,10)
-             
+             if(currentDegradation >= self.machine.criticalDamage):
+                 currentDegradation == self.machine.criticalDamage
+                 
+
              # calculate Production for the period given current condition
-             averageDegradation = (currentDegradation + prevDegradation)/2
-             currentProduction =  max(0,( 1 - averageDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost())
+             averageDegradation = abs((currentDegradation + prevDegradation)/2)
+             currentProduction = (1 - averageDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost()
 
              
              treatmentDecision = self.maintenance.generateTreatmentDecision(currentCovariates, step)
             
-                
-                    
+
              if(treatmentDecision):
               newMachineTime,currentGammaState =  self.maintenance.performTreatment(newMachineTime,currentGammaState,currentCovariates,self.machine,history)
-             
+              degradationAfterTreatment = currentGammaState *self.machine.sigma**2
+             else:
+              degradationAfterTreatment = None
               
              
              
              
-             timestepData = [self.machine.caseNumber,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],sensordata,currentDegradation,currentProduction,treatmentDecision]
+             timestepData = [self.machine.caseNumber,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],currentDegradation,degradationAfterTreatment,currentProduction,treatmentDecision]
              history.append(timestepData)
 
              
