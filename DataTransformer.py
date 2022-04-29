@@ -1,6 +1,6 @@
 import csv
 
-with open("Dtest.csv") as f, open("Dtestout.csv", "w") as out:
+with open("test.csv") as f, open("Dtestout.csv", "w") as out:
     headers = next(f).split(",")[2:]  # keep headers(for not id)
     for row in f:
         row = row.split(",")
@@ -8,6 +8,6 @@ with open("Dtest.csv") as f, open("Dtestout.csv", "w") as out:
         case = row[0]
         data = zip(headers, row[2:])  # match correct value to row item
         for a, b in data:
-            out.write("{}, {}, {}, {}\n".format(case,time, a.lower().strip('\n'), b.strip('\n')))
+            out.write("{},{},{},{}\n".format(case,time, a.lower().strip('\n'), b.strip('\n')))
             print("{} {} {} {}".format(case,time, a.lower(), b))
 

@@ -27,16 +27,16 @@ sys.stdout = open(file_path, "w")
 from datasets.data_loader import CSVLoader
 
 # Define data name
-data_name = 'machine_5'
+data_name = 'machine_6'
 # Define data dictionary
 data_directory = data_name + '/' + data_name + '_'
 
 # Load train and test datasets
-data_loader_training = CSVLoader(static_file=data_directory + 'static_train_data.csv.gz',
-                                 temporal_file=data_directory + 'temporal_train_data_eav.csv.gz')
+data_loader_training = CSVLoader(static_file=data_directory + 'static_train_data.csv',
+                                 temporal_file=data_directory + 'temporal_train_data_eav.csv')
 
-data_loader_testing = CSVLoader(static_file=data_directory + 'static_test_data.csv.gz',
-                                temporal_file=data_directory + 'temporal_test_data_eav.csv.gz')
+data_loader_testing = CSVLoader(static_file=data_directory + 'static_test_data.csv',
+                                temporal_file=data_directory + 'temporal_test_data_eav.csv')
 
 dataset_training = data_loader_training.load()
 dataset_testing = data_loader_testing.load()
@@ -53,8 +53,8 @@ from preprocessing.encoding import ProblemMaker
 # Define parameters
 problem = 'online'
 max_seq_len = 20
-label_name = ' productionvolume' #label name of production capacity, colum that will be tracked
-treatment = [' treatment']#label name of the repair/maintenance
+label_name = 'productionVolume' #label name of production capacity, colum that will be tracked
+treatment = ['treatment']#label name of the repair/maintenance
 window = 1
 
 # Define problem 
