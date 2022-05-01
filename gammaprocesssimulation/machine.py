@@ -5,6 +5,8 @@ from cmath import e
 class Machine:
    
     count = 0
+    
+   
 
     def __init__(self,rng):
         self.initialCondition,self.criticalDamage,self.betas,self.sigma,self.maxProductionSpeed = self.__generateRandomParameters(rng)
@@ -14,7 +16,6 @@ class Machine:
     # failurecondition check for the machine
 
     def failed(self,condition):
-        # return condition >= self.criticalDamage (korter maken?)
         if(condition >= self.criticalDamage):
              return True
         else:
@@ -22,11 +23,11 @@ class Machine:
 
     def __generateRandomParameters(self,rng):
         
-        initialCondition = 0 # predefined in main.py?
-        criticalDamage = rng.normal(2000,50) # predefined in main.py?
-        betas = [rng.normal(0.2/10,0.002),rng.normal(0.5/5,0.002),rng.normal(0.3/20,0.002)]  # predefined in main.py?
-        sigma = rng.normal(3,0.5)  # predefined in main.py?
-        maxProductionSpeed = 100 # predefined in main.py?
+        initialCondition = 0
+        criticalDamage = rng.normal(2000,50)
+        betas = [rng.normal(0.2/10,0.002),rng.normal(0.5/5,0.002),rng.normal(0.3/20,0.002)]
+        sigma = rng.normal(3,0.5)
+        maxProductionSpeed = 100
 
         return initialCondition,criticalDamage,betas,sigma,maxProductionSpeed
     
@@ -46,7 +47,6 @@ class Machine:
     # For the moment chosen to be linear
     
     def meanDegradation(self,machineTime,slope = 500):
-        # what?
         return slope * machineTime
 
     def machineTime(self,degradation, slope = 500):
