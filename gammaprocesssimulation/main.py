@@ -14,26 +14,36 @@ from machine import *
 from matplotlib import *
 
 
-# mean and standard deviations of exogenous variables,mean and stddev
-covariateGenerationArguments = [[10,9,20],[5,3,5]]
+# mean and standard deviations of exogenous variables, [[mean],[stddev]]
+# temperatuur - intensityofuse - humidity
+mean = [10,9,20]
+stddev = [5,3,5]
+covariateGenerationArguments = [[mean],[stddev]]
 
-# arguments for the gamma process, timeframe, steps(gamma jumps!) , decision points and lamda which remains 1
-processArguments = [10,50,1,5]
-steps = processArguments[1]
+# # # arguments for the gamma process, timeframe, steps(gamma jumps!) , decision points and lamda which remains 1 (?)
+# onbelangrijk - aantal increments (steps) - treament decision per hoeveel steps - onbelangrijk
+timeframe = 10      # ongebruikt?
+timesteps = 50
+decisionpoints = 1  # ongebruikt?
+lambda_ = 5         # ongebruikt?
+processArguments = [timeframe, timesteps, decisionpoints, lambda_]
 
 
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma, maxproduction volume/day
-machineParameters = [0,10000,[math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10],10,10000]
-
-
+starting_condition = 0      # start with 0 deteriation
+breakdown_condition = 1000  # machine breaks down at 1000 deteriation
+betas = [math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10]  # (?)
+sigma = 10 # stddev
+maxproduction = 10000 # maxproduction/day
+machineParameters = [starting_condition, breakdown_condition, betas, sigma, maxproduction]
 
 machineParametersLabels = ["caseNumber","startingCondition", "breakdownCondition","betas", "sigma", "maxProductionSpeed"]
 # define the data labels(columns) of the dataframe
 dataLabels = ["caseNumber","steps","temperature","intensityOfUse","humidity","degradationState","degradationAfterTreatment","productionVolume","treatment"]
 
 # define sample parameters
-sampleSize = 50
+sampleSize = 50 # 50 machines maar? 12000? 10000 training, 1000 val, 1000 test?
 trainTestSplit = 1/2
 
 ###########################################################################################################################################
@@ -41,13 +51,14 @@ trainTestSplit = 1/2
 def generateSample(samplesize,rng,maintenance,usedMachine = None):
     # pick seed for random generation for repeatability and to determine treatment effect
     
-  dataList = list()
-  machineParametersList = list()
+  dataList = list() # list of deteriation?
+  machineParametersList = list() # ?
   # if a machine is given, create the process based on the same machine otherwise generate differing machines for each run
+  # why?
   if(usedMachine == None):
-    for sampleMachine in range(samplesize):
+    for sampleMachine in range(samplesize): # do this 50 times
         machine = Machine(rng)
-        process  = Deteriorationprocess(processArguments,machine,covariateGenerator,maintenance,rng)
+        process = Deteriorationprocess(processArguments,machine,covariateGenerator,maintenance,rng)
         dataList.extend(process.generaterun())
         machineParametersList.append(machine.getParameters())
   else:
@@ -113,7 +124,7 @@ def formatData(deteriorationData,machineParameterData):
 
 
 
-rng = np.random.default_rng(10)
+rng = np.random.default_rng(10) # use the same seed for generating random numbers
 
 # initialize the exogenous covariate generator / 
 # these are not influenced by the current state of the machine but arrise from the use pattern or environment the machine operates in!
@@ -121,11 +132,12 @@ covariateGenerator = CovariateGenerator(processArguments,covariateGenerationArgu
 
 # define machine to use only in case of fixed machine and don't forget to set the parameters to your liking
 
-fixedMachine = Machine(rng)
+fixedMachine = Machine(rng) # maak 1 machine, moet altijd dezelfde zijn, aldus emiel
 fixedMachine.setParameters(machineParameters)
 
 # define maintenanceProgram for machines/ runs with custom maintenance program if provided in a list!
-
+# define maintanence politiek (random momenteel?)
+# here we defne a dependency between maintanence and covariates
 dynamicMaintenance = MaintenanceProgram(covariateGenerationArguments,rng)
 
 # generate the sample
