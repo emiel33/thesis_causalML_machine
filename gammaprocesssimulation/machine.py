@@ -46,10 +46,10 @@ class Machine:
     # defines the expected degradation step for the next turn!
     # For the moment chosen to be linear
     
-    def meanDegradation(self,machineTime,slope = 100):
+    def meanDegradation(self,machineTime,slope = 500):
         return slope * machineTime
 
-    def machineTime(self,degradation, slope = 100):
+    def machineTime(self,degradation, slope = 500):
         return degradation/slope
     
     def getParameters(self):

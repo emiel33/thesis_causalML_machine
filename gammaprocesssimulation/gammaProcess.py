@@ -9,8 +9,14 @@ from array import *
 
 class Deteriorationprocess:
 
+    count = 0
+
     def __init__(self, processArguments, machine, covariateGenerator ,maintenanceProgram,rng):
        
+        # update static cound and caseNumber
+        Deteriorationprocess.count+=1
+        self.caseNumber = Deteriorationprocess.count
+
         # define basic process properties
         self.timeFrame = processArguments[0]
         self.steps = processArguments[1]
@@ -81,23 +87,29 @@ class Deteriorationprocess:
                  
 
              # calculate Production for the period given current condition
-             averageDegradation = abs((currentDegradation + prevDegradation)/2)
-             currentProduction = (1 - averageDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatementCost()
+             
+             
 
              
              treatmentDecision = self.maintenance.generateTreatmentDecision(currentCovariates, step)
             
 
              if(treatmentDecision):
-              newMachineTime,currentGammaState =  self.maintenance.performTreatment(newMachineTime,currentGammaState,currentCovariates,self.machine,history)
-              degradationAfterTreatment = currentGammaState *self.machine.sigma**2
+                 # return new MachineTime , adjust the currentGammaState and set preRepairGammaState to the previously calculated currentGammaState
+              newMachineTime,postRepairGammaState,preRepairGammaState =  self.maintenance.performTreatment(newMachineTime,currentGammaState,currentCovariates,self.machine,history)
+              currentGammaState = postRepairGammaState
+              currentDegradation = currentGammaState *self.machine.sigma**2
+              preRepairDegradation = preRepairGammaState * self.machine.sigma**2
+              repairEffect = currentDegradation - preRepairDegradation
+              currentProduction = (1 - currentDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatmentCost()
              else:
-              degradationAfterTreatment = None
-              
+               # calculate production under no treatment condition
+              currentProduction = (1 - currentDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize
+              repairEffect = None
              
              
              
-             timestepData = [self.machine.caseNumber,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],currentDegradation,degradationAfterTreatment,currentProduction,treatmentDecision]
+             timestepData = [self.caseNumber,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],currentDegradation,repairEffect,currentProduction,treatmentDecision]
              history.append(timestepData)
 
              

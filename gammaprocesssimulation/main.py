@@ -24,7 +24,7 @@ steps = processArguments[1]
 
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma, maxproduction volume/day
-machineParameters = [0,1000,[math.log(1,e)/10,math.log(1,e)/9,math.log(1,e)/20],0.01,10000]
+machineParameters = [0,10000,[math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10],10,10000]
 
 
 
@@ -33,7 +33,8 @@ machineParametersLabels = ["caseNumber","startingCondition", "breakdownCondition
 dataLabels = ["caseNumber","steps","temperature","intensityOfUse","humidity","degradationState","degradationAfterTreatment","productionVolume","treatment"]
 
 # define sample parameters
-samplesize = 2
+sampleSize = 50
+trainTestSplit = 1/2
 
 ###########################################################################################################################################
 
@@ -91,9 +92,17 @@ def formatData(deteriorationData,machineParameterData):
 
   # add the cummulative production upto that time point for the given case
   deteriorationData["cumulativeProduction"]=deteriorationData.groupby(['caseNumber'])['productionVolume'].cumsum(axis=0)
+  
+  # split into test and train dataset
+  deteriorationTrainData = deteriorationData.loc[1: round(sampleSize*trainTestSplit)]
+  deteriorationTestData = deteriorationData.loc[round(sampleSize*trainTestSplit): sampleSize]
+
+  print(deteriorationData.head(50))
 
   #output the data to a csv
   deteriorationData.to_csv(os.getcwd() + "/gammaprocesssimulation/deteriorationData.csv")
+  deteriorationTrainData.to_csv(os.getcwd() + "/gammaprocesssimulation/deteriorationTrainData.csv")
+  deteriorationTestData.to_csv(os.getcwd() + "/gammaprocesssimulation/deteriorationTestData.csv")
   machineParameterData.to_csv(os.getcwd() + "/gammaprocesssimulation/machineParameterData.csv")
 
   return deteriorationData,machineParameterData
@@ -121,7 +130,7 @@ dynamicMaintenance = MaintenanceProgram(covariateGenerationArguments,rng)
 
 # generate the sample
 
-deteriorationData,machineParameterData = generateSample(samplesize,rng,dynamicMaintenance,fixedMachine)
+deteriorationData,machineParameterData = generateSample(sampleSize,rng,dynamicMaintenance,fixedMachine)
 # format data into csv format
 deteriorationDatadf,machineParameterDatadf = formatData(deteriorationData,machineParameterData)
 

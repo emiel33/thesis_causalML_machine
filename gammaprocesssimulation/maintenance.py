@@ -18,7 +18,7 @@ class MaintenanceProgram:
 
     def __defineTreatmentPolicy(self):
         length = len(self.mean)
-        policy = np.array([0.2,0.1,0.2])
+        policy = np.array([0.001,0.001,0.001])
     
         return policy
 
@@ -39,12 +39,12 @@ class MaintenanceProgram:
        
         return maintenance
 
-    def calculateTreatementCost(self):
+    def calculateTreatmentCost(self):
 
         productionReductionFactor = 0.5
         return productionReductionFactor
    
-    def performTreatment(self,currentMachineTime,currentGammaState,currentCovariates,machine,history):
+    def performTreatment(self,preRepairMachineTime,preRepairGammaState,currentCovariates,machine,history):
        
        # For the purposes of this simulation repair success depends on the current and previous period covariates
         '''
@@ -58,12 +58,12 @@ class MaintenanceProgram:
             humidity = (currentCovariates[2] + history[-1][4]*0.5)*1.2
         '''
         # check correctness
-        newGammaState  =  (currentGammaState - self.rng.lognormal(3.25,0.25)/machine.sigma**2)
+        postRepairGammaState  =  (preRepairGammaState - self.rng.lognormal(3,0.10)/machine.sigma**2)
        # Machine time reset to earlier point / chosen to be lower than the average would suspect in able to indicate incomplete revearsal 
        # if machine had exponential decay this would make early intervention better, in linear case less important!
-        newMachineTime =  (machine.machineTime(newGammaState) + currentMachineTime)/2
+        newMachineTime =  (machine.machineTime(postRepairGammaState) + preRepairMachineTime)/2
 
-        if (newGammaState < 0):
-            newGammaState = 0
+        if (postRepairGammaState < 0):
+            postRepairGammaState = 0
         
-        return  newMachineTime, newGammaState
+        return  newMachineTime, postRepairGammaState , preRepairGammaState
