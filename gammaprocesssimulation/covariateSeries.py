@@ -10,38 +10,42 @@ class CovariateGenerator:
     def __init__(self,processArguments,generationArguments,rng):
        
         # general process parameters
-        self.timeFrame = processArguments[0]
+        self.timeFrame = processArguments[0] #ongebruikt ?
         self.steps = processArguments[1]
-        self.stepsize = self.timeFrame/self.steps
+        self.stepsize = self.timeFrame/self.steps # ongebruikt ?
 
         # parameters for exogenous variable generation
         self.mean = generationArguments[0]
         self.standarddev = generationArguments[1]
-        self.rng =rng
+        self.rng = rng
         self.covariance = self.__generateCovarianceMatrix(self.rng)
 
 
     def __generateCovarianceMatrix(self,rng):
-       
+
+        # Corrolationmatrix C from eigenvector
+        # diagonaalmatrix met stddev D
+        # covariance = C*D*C
+
         # generate random correlation matrix 
-        # each eigenvalue represents percentage explained covariance of dimension/4
-        #  parameters must always sum to dimension of correlation matrix ( thus total explained covariance = 1)
-        random = rng
-        correlationMatrix = random_correlation.rvs((.5, .9, 1.6), random_state = random)
+        # each eigenvalue represents percentage explained covariance of dimension/4 (?)
+        # parameters must always sum to dimension of correlation matrix ( thus total explained covariance = 1) (?)
+        # eigenvector =
+        eig = (.5, .9, 1.6) # zelf verzonnen? why?
+        C = random_correlation.rvs(eig, random_state=rng) # random getallen behalve op diagonaal -> 1, symmetrisch
         # create diagonally filled matrix with standarddevs
-        standarddevMatrix = np.diag(self.standarddev)
+        D = np.diag(self.standarddev) # overal 0 behalve op diagonaal -> stddev
         # create covariance matrix based on the standdardevs and random correlation matrix
-        covariance = np.matmul(standarddevMatrix,np.matmul(correlationMatrix,standarddevMatrix))
-        
+        # covariance = np.matmul(standarddevMatrix,np.matmul(correlationMatrix,standarddevMatrix)) # i (evelien) would do it like this:
+        covariance = C.dot(D).dot(C)
         return covariance
     
-    def generateCovariateTimePoint(self):
+    def generateCovariateTimePoint(self): # why?
         
         # should we add bias here?
-        covariates =  list(self.rng.multivariate_normal(self.mean,self.covariance))
+        covariates = list(self.rng.multivariate_normal(self.mean, self.covariance))
         return covariates
-    
-    
+
     def generateCovariateTimeSeries(self):
         covariateTimeSeries = list()
         

@@ -1,11 +1,8 @@
- 
 from cmath import e, exp
 import numpy as np
 
 from maintenance import MaintenanceProgram
 from array import *
-
-
 
 class Deteriorationprocess:
 
@@ -34,63 +31,60 @@ class Deteriorationprocess:
         self.rng = rng
 
     # increment the machinetime
-    def scaledTimeIncrement(self,covariates,Betas):
+    def scaledTimeIncrement(self,covariates,Betas)
+        # choose exponential time step
         return (e**(np.dot(Betas,covariates)))*self.stepsize
     
      
     # creating equivalent to "z"-values for gamma distribution!                                                                                                                 
     def shapeFunction(self,newMachineTime,oldMachineTime):
+        # why new - old mean?
         return (self.machine.meanDegradation(newMachineTime) - self.machine.meanDegradation(oldMachineTime))/ self.machine.sigma**2
    
     def generaterun(self):
         
         history = list()
-        oldMachineTime = 0
-        prevGammaState = self.machine.initialCondition
-        prevDegradation = prevGammaState* self.machine.sigma**2
-        currentDegradation = 0
-        
-       
-        
-        
+        oldMachineTime = 0 # ?
+        prevGammaState = self.machine.initialCondition # 0?
+        prevDegradation = prevGammaState*self.machine.sigma**2 # Z(t) = gamma * sigma^2
+        currentDegradation = 0 # initial condition?
 
-
-        for step in range(self.steps):
+        for step in range(self.steps): # 50 times:
              
              # check if machine has failed?
+            if(self.machine.failed(currentDegradation)): # if > dan breakdown treshold:
 
-            if(self.machine.failed(currentDegradation)):
-                
-               timeStepData = [self.machine.caseNumber,step,None,None,None,None,None,None,None]
-               history.append(timeStepData)
+              # if failed:
+              timeStepData = [self.machine.caseNumber,step,None,None,None,None,None,None,None] # ?
+              history.append(timeStepData)
 
             else:
-             
+             # if not failed:
              # generate covariates at for current step
-            
+
+             # why next step?
              currentCovariates = self.covariateGenerator.generateCovariateTimePoint()
              
-             
              # increment machineTime according to theory of accumulation of damages
+             # machinetime? leg dit meer uit in paper mss
              newMachineTime = oldMachineTime + self.scaledTimeIncrement(currentCovariates, self.machine.betas)
              
              # determine shape parameter of gamma jump!
              shape = self.shapeFunction(newMachineTime,oldMachineTime)
-             
+
              # jump the deterioration state!
+             # Z(t)
              incrementDeterioriation = self.rng.gamma(shape, self.scaleParameter)
              currentGammaState = prevGammaState + incrementDeterioriation
-             currentDegradation = currentGammaState * self.machine.sigma**2
-             
+             currentDegradation = currentGammaState * self.machine.sigma**2 # Z(t) = gamma(t) * sigma^2
+
+             # check if machine hs broken down (current degradation > critical degradation)
              if(currentDegradation >= self.machine.criticalDamage):
                  currentDegradation == self.machine.criticalDamage
                  
 
              # calculate Production for the period given current condition
-             
-             
 
-             
              treatmentDecision = self.maintenance.generateTreatmentDecision(currentCovariates, step)
             
 
@@ -104,6 +98,7 @@ class Deteriorationprocess:
               currentProduction = (1 - currentDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize*self.maintenance.calculateTreatmentCost()
              else:
                # calculate production under no treatment condition
+               # relation between deteriation and production
               currentProduction = (1 - currentDegradation/self.machine.criticalDamage)*self.machine.maxProductionSpeed*self.stepsize
               repairEffect = None
              

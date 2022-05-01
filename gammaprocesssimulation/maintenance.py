@@ -13,8 +13,6 @@ class MaintenanceProgram:
         self.policy =  self.__defineTreatmentPolicy()
         self.rng = rng
         self.treatmentPolicy = treatmentPolicy
-        
-
 
     def __defineTreatmentPolicy(self):
         length = len(self.mean)
@@ -31,6 +29,7 @@ class MaintenanceProgram:
         if(self.treatmentPolicy == None):
         # if more than 1 than the data is quite rare, and could indicate repair is necessary
             standardizedData= ( np.array(covariates)- np.array(self.mean))/ np.array(self.standarddevs)
+            # sigmoid = kans dat je treatment of geen treatment doet
             sigmoidArg= np.dot(self.policy,standardizedData)
             maintenance = self.rng.binomial(1,self.sigmoid(sigmoidArg))
         else:
@@ -40,7 +39,8 @@ class MaintenanceProgram:
         return maintenance
 
     def calculateTreatmentCost(self):
-
+        # when doing treatment, only produce at half production capacity
+        # relatie tussen treatment and production
         productionReductionFactor = 0.5
         return productionReductionFactor
    
@@ -58,6 +58,7 @@ class MaintenanceProgram:
             humidity = (currentCovariates[2] + history[-1][4]*0.5)*1.2
         '''
         # check correctness
+        # what is gammastate? we already calculated Z(t)?
         postRepairGammaState  =  (preRepairGammaState - self.rng.lognormal(3,0.10)/machine.sigma**2)
        # Machine time reset to earlier point / chosen to be lower than the average would suspect in able to indicate incomplete revearsal 
        # if machine had exponential decay this would make early intervention better, in linear case less important!
