@@ -1,0 +1,14 @@
+Finish data loading.
+Finish defining problem.
+Finish treatment effects model training and testing.
+Finish predictor model evaluation.
+Overall performance
+results
+{'productionVolume + mse': array([2417794.88253753, 2382958.01942734, 2307963.6568721 ,
+       2247573.78494862, 2240205.56257317, 2211203.9011002 ,
+       2114742.81304331, 2073832.15692404, 2071579.15584087,
+       2014072.33966703, 2009161.55065079, 1989756.97566802,
+       1908149.0158577 , 1908359.74722135, 1862366.80127601,
+       1746612.82502412, 1752203.89500872, 1738626.24383579,
+       1663067.49908816,              nan])}
+overall result
