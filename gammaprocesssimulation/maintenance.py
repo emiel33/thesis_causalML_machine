@@ -66,7 +66,7 @@ class MaintenanceProgram:
 
     def calculateTreatmentCost(self):
 
-        productionReductionFactor = 0.5
+        productionReductionFactor = 0.9
         return productionReductionFactor
    
     def performTreatment(self,preRepairMachineTime,preRepairGammaState,currentCovariates,machine,history):
@@ -83,7 +83,7 @@ class MaintenanceProgram:
             humidity = (currentCovariates[2] + history[-1][4]*0.5)*1.2
         '''
         # check correctness
-        postRepairGammaState  =  (preRepairGammaState - self.rng.lognormal(3,0.10)/machine.sigma**2)
+        postRepairGammaState  =  (preRepairGammaState - self.rng.lognormal(5.4,0.10)/machine.sigma**2)
        # Machine time reset to earlier point / chosen to be lower than the average would suspect in able to indicate incomplete revearsal 
        # if machine had exponential decay this would make early intervention better, in linear case less important!
         newMachineTime =  (machine.machineTime(postRepairGammaState) + preRepairMachineTime)/2

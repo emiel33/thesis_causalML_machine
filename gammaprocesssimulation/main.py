@@ -24,7 +24,7 @@ steps = processArguments[1]
 
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma, maxproduction volume/day
-machineParameters = [0,10000,[math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10],10,10000]
+machineParameters = [0,10000,[math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10],5,10000]
 
 
 
@@ -103,8 +103,8 @@ def formatData(deteriorationData,machineParameterData,nameOfCSV):
   print(deteriorationData.head(50))
 
   #output the data to a csv
-  deteriorationData.to_csv(os.getcwd() + "/gammaprocesssimulation/"+  nameOfCSV + ".csv")
-  machineParameterData.to_csv(os.getcwd() + "/gammaprocesssimulation/" +  "machineParameterData" + ".csv")
+  deteriorationData.to_csv(nameOfCSV + ".csv")
+  machineParameterData.to_csv("machineParameterData" + ".csv")
 
   return deteriorationData,machineParameterData
 
@@ -112,7 +112,7 @@ def generatePotentialOutcomes(potentialOutcomeTreatments, sampleSize, rng, covar
   
   # read the treatment actions and calculate the potentialOutcomes dataSet given 
   covariateGenerator = CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(10))
-  dataSet = pd.read_csv(os.getcwd() + "/gammaprocesssimulation/" + potentialOutcomeTreatments +".csv", index_col=['id'])
+  dataSet = pd.read_csv(potentialOutcomeTreatments +".csv", index_col=['id'])
   dataSet = dataSet.filter(["step1","step2","step3","step4","step5"])
   dataList = list()
   machineParametersList = list()
