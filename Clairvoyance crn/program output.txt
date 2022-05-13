@@ -1,3 +1,2 @@
 Finish data loading.
 Finish defining problem.
-Finish treatment effects model training and testing.
