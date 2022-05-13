@@ -4,19 +4,31 @@
 from calendar import c
 import numpy as np
 from math import e
+import random as rand
 
 class MaintenanceProgram:
 
-    def __init__(self,generationArguments,rng, treatmentPolicy = None):
-        self.mean = generationArguments[0]
-        self.standarddevs = generationArguments[1]
-        self.policy =  self.__defineTreatmentPolicy()
-        self.rng = rng
-        self.treatmentPolicy = treatmentPolicy
+    def __init__(self,processArguments,generationArguments,rng, treatmentplan = "policy"):
         
+        self.mean = generationArguments[0]
+        self.steps = processArguments[1]
+        self.startTreatmentPlan = processArguments[4]
+        self.endTreatmentPlan = processArguments[5]
+        self.standarddevs = generationArguments[1]
+        self.policy =  self.generateNormalTreatmentPolicy()
+        self.rng = rng
+        self.treatmentPlan = treatmentplan
+        
+    def generateRandomTreatmentPlan(self):
+        plan = list()
+        for step in (self.steps -self.startPrediction):
+            plan.append(rand.randint(0,1))
+
+        self.treatmentPlan = plan
 
 
-    def __defineTreatmentPolicy(self):
+
+    def generateNormalTreatmentPolicy(self):
         length = len(self.mean)
         policy = np.array([0.001,0.001,0.001])
     
@@ -28,16 +40,29 @@ class MaintenanceProgram:
         # draw treatment with probability sigmoid of covariates ? this is not normalized, does 
     def generateTreatmentDecision(self,covariates,step): 
         
-        if(self.treatmentPolicy == None):
-        # if more than 1 than the data is quite rare, and could indicate repair is necessary
+        
+        
+        if(self.treatmentPlan == "policy" or step < self.startTreatmentPlan or step > self.endTreatmentPlan):
+            # if more than 1 than the data is quite rare, and could indicate repair is necessary
             standardizedData= ( np.array(covariates)- np.array(self.mean))/ np.array(self.standarddevs)
             sigmoidArg= np.dot(self.policy,standardizedData)
             maintenance = self.rng.binomial(1,self.sigmoid(sigmoidArg))
-        else:
-            maintenance = self.treatmentPolicy[step]
-
+        
+        elif( self.treatmentPlan == "random"):
+            maintenance = rand.randint(0,1)
+        else: 
+            # follow the predefined treatmentPlan from the first predictionday !
+            print(step)
+            print("ldlfjqsdlfk")
+            print(self.treatmentPlan[step - self.startTreatmentPlan])
+            maintenance = self.treatmentPlan[step - self.startTreatmentPlan]
+           
        
         return maintenance
+    
+    def setTreatmentPlan(self, treatmentPlan = None):
+            self.treatmentPlan == treatmentPlan
+
 
     def calculateTreatmentCost(self):
 

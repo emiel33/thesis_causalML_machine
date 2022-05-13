@@ -11,11 +11,11 @@ class Deteriorationprocess:
 
     count = 0
 
-    def __init__(self, processArguments, machine, covariateGenerator ,maintenanceProgram,rng):
+    def __init__(self, processArguments, machine, covariateGenerator ,maintenanceProgram,rng, identifier):
        
         # update static cound and caseNumber
-        Deteriorationprocess.count+=1
-        self.caseNumber = Deteriorationprocess.count
+        
+        self.caseLabel = identifier
 
         # define basic process properties
         self.timeFrame = processArguments[0]
@@ -109,7 +109,7 @@ class Deteriorationprocess:
              
              
              
-             timestepData = [self.caseNumber,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],currentDegradation,repairEffect,currentProduction,treatmentDecision]
+             timestepData = [self.caseLabel,step, currentCovariates[0],currentCovariates[1],currentCovariates[2],currentDegradation,repairEffect,currentProduction,treatmentDecision]
              history.append(timestepData)
 
              
