@@ -27,7 +27,7 @@ sys.stdout = open(file_path, "w")
 from datasets.data_loader import CSVLoader
 
 # Define data name
-data_name = 'machine_6'
+data_name = 'machine_8'
 # Define data dictionary
 data_directory = data_name + '/' + data_name + '_'
 
@@ -127,7 +127,7 @@ print_performance(result, metric_sets, metric_parameters)
 print("results")
 print (result)
 print("overall result")
-print(np.nanmean(result[' productionvolume + mse']))
+print(np.nanmean(result['productionVolume + mse']))
 
 
 
