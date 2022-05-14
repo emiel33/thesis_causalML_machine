@@ -2,8 +2,8 @@ import csv
 
 
 timestep=50
-machines=1000
-with open("deteriorationTestData.csv") as f, open("Dtrainout.csv", "w") as out:
+machines=10000
+with open("trainData.csv") as f, open("Dtrainout.csv", "w") as out:
     headers = next(f).split(",")[2:]  # keep headers(for not id)
     out.write("id,time,variable,value\n")
 

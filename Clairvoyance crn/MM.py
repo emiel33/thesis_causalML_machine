@@ -27,7 +27,7 @@ sys.stdout = open(file_path, "w")
 from datasets.data_loader import CSVLoader
 
 # Define data name
-data_name = 'machine_7'
+data_name = 'machine_9'
 # Define data dictionary
 data_directory = data_name + '/' + data_name + '_'
 
@@ -217,7 +217,7 @@ def calc_best(patient_history, treatment_options, counterfactual_predictions):
         s=0
         for i in range(5):
             #if treatment_options[index][i][0] == 1:
-            #    s += (counterfactual[i]*0.5)
+            #    s += (counterfactual[i]*0.9)
             #else:
             #    s += counterfactual[i]
             s+=counterfactual[i]
@@ -230,37 +230,37 @@ def calc_best(patient_history, treatment_options, counterfactual_predictions):
     return best
 #treatment_options = np.array([[[1], [1], [1], [1], [1], [0]]
 #                                 ,[[0], [0], [0], [0], [1], [1]]])
-treatment_options=all_options()
 
-history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
+if 1==1:
+    treatment_options=all_options()
+
+    history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
                                                                             patient_id=6, timestep=5,
                                                                             treatment_options=treatment_options)
 
-#from evaluation import print_counterfactual_predictions
-#print_counterfactual_predictions(patient_history=history, treatment_options=treatment_options,
-#                                   counterfactual_predictions=counterfactual_traj)
-#
-#desired=calc_best(patient_history=history, treatment_options=treatment_options,
-#                                counterfactual_predictions=counterfactual_traj)
-#print("treatment paln for ",6,treatment_options[desired])
+    #from evaluation import print_counterfactual_predictions
+    #print_counterfactual_predictions(patient_history=history, treatment_options=treatment_options,
+    #                                   counterfactual_predictions=counterfactual_traj)
+    #
+    #desired=calc_best(patient_history=history, treatment_options=treatment_options,
+    #                                counterfactual_predictions=counterfactual_traj)
+    #print("treatment paln for ",6,treatment_options[desired])
 
-fplan = open("treatmentplan.csv", "w")
-fplan.write("id,starttime,step1,step2,step3,step4,step5")
+    fplan = open("treatmentplan.csv", "w")
+    fplan.write("id,starttime,step1,step2,step3,step4,step5\n")
 
 
-for i in range(100):
+    for i in range(100):
 
-    r = np.random.randint(0,10)
-    id=10*i+r
-    history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
-                                                                            patient_id=id, timestep=21,
-                                                                            treatment_options=treatment_options)
+        history, counterfactual_traj = treatment_model.predict_counterfactual_trajectories(dataset=dataset_testing,
+                                                                                patient_id=i, timestep=20,
+                                                                                treatment_options=treatment_options)
 
-    print("calculating case",10001+id)
-    desired=calc_best(patient_history=history, treatment_options=treatment_options,
-                                counterfactual_predictions=counterfactual_traj)
-    print("treatment paln for ",10001+id,treatment_options[desired])
-    line= "{},20,{},{},{},{},{}\n".format(10001+id,treatment_options[desired][0][0],treatment_options[desired][1][0],treatment_options[desired][2][0],treatment_options[desired][3][0],treatment_options[desired][4][0])
-    fplan.write(line)
+        print("calculating case",i)
+        desired=calc_best(patient_history=history, treatment_options=treatment_options,
+                                    counterfactual_predictions=counterfactual_traj)
+        print("treatment paln for ",i,treatment_options[desired])
+        line= "{},20,{},{},{},{},{}\n".format(i,treatment_options[desired][0][0],treatment_options[desired][1][0],treatment_options[desired][2][0],treatment_options[desired][3][0],treatment_options[desired][4][0])
+        fplan.write(line)
 
-fplan.close()
+    fplan.close()
