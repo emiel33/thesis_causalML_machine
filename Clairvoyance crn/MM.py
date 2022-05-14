@@ -215,11 +215,7 @@ def calc_best(patient_history, treatment_options, counterfactual_predictions):
     for (index, counterfactual) in enumerate(counterfactual_predictions):
         #print("counter", index, counterfactual)
         s=0
-        for i in range(5):
-            #if treatment_options[index][i][0] == 1:
-            #    s += (counterfactual[i]*0.9)
-            #else:
-            #    s += counterfactual[i]
+        for i in range(projection_horizon):
             s+=counterfactual[i]
         totals.append(s)
         if s > best_value:
