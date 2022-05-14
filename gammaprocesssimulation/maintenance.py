@@ -52,11 +52,9 @@ class MaintenanceProgram:
             maintenance = rand.randint(0,1)
         else: 
             # follow the predefined treatmentPlan from the first predictionday !
-            print(step)
-            print("ldlfjqsdlfk")
-            print(self.treatmentPlan[step - self.startTreatmentPlan])
+            
             maintenance = self.treatmentPlan[step - self.startTreatmentPlan]
-           
+            
        
         return maintenance
     

@@ -119,10 +119,11 @@ def generatePotentialOutcomes(potentialOutcomeTreatments, sampleSize, rng, covar
   for index,row in dataSet.iterrows():
     row = dataSet.loc[index]
     treatmentPlan = row.to_numpy()
-  
+    print(treatmentPlan)
     maintenanceProgram = MaintenanceProgram(processArguments,covariateGenerationArguments,np.random.default_rng(10),treatmentplan = treatmentPlan)
 
     process  = Deteriorationprocess(processArguments,usedMachine,covariateGenerator,maintenanceProgram,rng,index)
+    print(process.generaterun())
     dataList.extend(process.generaterun())
     machineParametersList.append(usedMachine.getParameters())
 
@@ -141,8 +142,8 @@ def generatePotentialOutcomes(potentialOutcomeTreatments, sampleSize, rng, covar
 # 3 sequences of exogenous covariates inable to recreate similar conditions for potential outcomes!
 trainCovariateGenerator= CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(2))
 testcovariateGenerator = CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(2))
-testPotentialOutcomeGenerator = CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(2))
-
+testPotentialOutcomeGenerator1 = CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(3))
+testPotentialOutcomeGenerator2 = CovariateGenerator(processArguments,covariateGenerationArguments,np.random.default_rng(3))
 # define machine to use only in case of fixed machine and don't forget to set the parameters to your liking!
 
 fixedMachine = Machine(np.random.default_rng(10))
@@ -154,7 +155,7 @@ dynamicMaintenance = MaintenanceProgram(processArguments,covariateGenerationArgu
 # create sample for 
 rng = np.random.default_rng(1)
 
-POpolicyData,POmachineParameterData = generateSample(PotentialOutcomeSize, rng, dynamicMaintenance ,testPotentialOutcomeGenerator,usedMachine = fixedMachine)
+POpolicyData,POmachineParameterData = generateSample(PotentialOutcomeSize, rng, dynamicMaintenance ,testPotentialOutcomeGenerator1,usedMachine = fixedMachine)
 testData,testMachineParameterData = generateSample(testSize,rng,dynamicMaintenance,testcovariateGenerator,usedMachine = fixedMachine)
 trainData,trainMachineParameterData = generateSample(trainingSize,rng,dynamicMaintenance,trainCovariateGenerator,usedMachine = fixedMachine)
 
@@ -165,7 +166,7 @@ trainDatadf,trainMachineParameterDatadf = formatData(trainData,trainMachineParam
 
 rng = np.random.default_rng(1)
 
-POcustomData,POmachineParameterData = generatePotentialOutcomes("potentialOutcomeTreatments",PotentialOutcomeSize, rng, testPotentialOutcomeGenerator,usedMachine = fixedMachine)
+POcustomData,POmachineParameterData = generatePotentialOutcomes("potentialOutcomeTreatments",PotentialOutcomeSize, rng, testPotentialOutcomeGenerator2,usedMachine = fixedMachine)
 
 
 POcustomDatadf,POmachineParameterDatadf = formatData(POcustomData,POmachineParameterData,"POcustomData")
