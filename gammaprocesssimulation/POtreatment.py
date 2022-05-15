@@ -18,7 +18,7 @@ steps = processArguments[1]
 
 # Deterioration parameters for the machines under study respectively the
 # starting condition, breakdown condition, betas, sigma, maxproduction volume/day
-machineParameters = [0,10000,[math.log(1,e)*25,math.log(1,e)*1,math.log(1,e)*10],5,10000]
+machineParameters = [0,10000,[math.log(1.1,e),math.log(1.2,e),math.log(1.3,e)],5,10000]
 
 
 
