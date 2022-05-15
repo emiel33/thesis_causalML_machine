@@ -75,6 +75,7 @@ for step in range(predictionWindow):
     element = np.divide(numerator,denominator)
     currentWeight = np.multiply(element,currentWeight)
 
+currentWeight = 1/ currentWeight
 # retrieve the + 5 cummulative production
 
 cumulativeProducuction = pivotedData.groupby(["caseNumber"],group_keys=False).apply(lambda x : x.loc[:,("cumulativeProduction",start_t + 5)])
